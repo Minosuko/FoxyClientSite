@@ -28,8 +28,16 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    http_response_code(204); // No Content - verify failed
-    exit;
+    // Fallback to getting profile directly if no session exists (e.g. LAN play)
+    $stmt = $mysqli->prepare("SELECT uuid, name FROM profiles WHERE name = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        http_response_code(204); // No Content - verify failed
+        exit;
+    }
 }
 
 $session = $result->fetch_assoc();
@@ -60,7 +68,7 @@ if ($profile['skin_md5']) {
 }
 if ($profile['cape_md5']) {
     $md5 = $profile['cape_md5'];
-    $url = "$baseUrl/uploads/capes/{$fuuid}_cape.png?md5=$md5";
+    $url = "$baseUrl/uploads/capes/{$fuuid}_{$md5}_cape.png";
     if (strpos($url, '//') === 0) {
         $url = (strpos($baseUrl, 'https') === 0 ? 'https:' : 'http:') . $url;
     }

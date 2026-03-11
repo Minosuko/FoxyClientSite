@@ -234,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $file_tmp = $_FILES['cape']['tmp_name'];
         $file_size = $_FILES['cape']['size'];
-        $file_name = $profile['uuid'] . '_cape.png';
+        $file_name = $profile['uuid'] . '_' . md5_file($file_tmp) . '_cape.png';
         $file_path = $cape_dir . $file_name;
         
         if ($file_size > 5120) {
@@ -243,6 +243,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "Cape must be a PNG file.";
         } else {
             if (move_uploaded_file($file_tmp, $file_path)) {
+                if ($profile['cape_md5']) {
+                    unlink($cape_dir . $profile['uuid'] . '_' . $profile['cape_md5'] . '_cape.png');
+                }
                 $cape_md5 = md5_file($file_path);
                 
                 $stmt = $mysqli->prepare("UPDATE profiles SET cape_md5 = ? WHERE user_id = ?");
@@ -262,6 +265,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $mysqli->prepare("UPDATE profiles SET cape_md5 = NULL WHERE user_id = ?");
         $stmt->bind_param("i", $user_id);
         if ($stmt->execute()) {
+            if ($profile['cape_md5']) {
+                unlink($cape_dir . $profile['uuid'] . '_' . $profile['cape_md5'] . '_cape.png');
+            }
             $success = "Cape removed successfully!";
             $profile['cape_md5'] = null;
         } else {
@@ -922,7 +928,7 @@ if ($profile['last_rename_at']) {
         <?php endif; ?>
 
         <?php if ($profile['cape_md5']): ?>
-        skinViewer.loadCape("<?php echo "$baseUrl/uploads/capes/{$uuid}_cape.png?md5={$profile['cape_md5']}"; ?>");
+        skinViewer.loadCape("<?php echo "$baseUrl/uploads/capes/{$uuid}_{$profile['cape_md5']}_cape.png"; ?>");
         <?php endif; ?>
 
         skinViewer.animations.add(skinview3d.WalkingAnimation);

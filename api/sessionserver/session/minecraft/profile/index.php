@@ -44,7 +44,7 @@ if ($profile['skin_md5']) {
 }
 if ($profile['cape_md5']) {
     $md5 = $profile['cape_md5'];
-    $url = "$baseUrl/uploads/capes/{$uuid}_cape.png?md5=$md5";
+    $url = "$baseUrl/uploads/capes/{$uuid}_{$md5}_cape.png";
     if (strpos($url, '//') === 0) {
         $url = (strpos($baseUrl, 'https') === 0 ? 'https:' : 'http:') . $url;
     }

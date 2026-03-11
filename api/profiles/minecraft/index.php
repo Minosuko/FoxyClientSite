@@ -18,7 +18,7 @@ if (strlen($uuid) === 32) {
     $uuid = substr($uuid, 0, 8) . '-' . substr($uuid, 8, 4) . '-' . substr($uuid, 12, 4) . '-' . substr($uuid, 16, 4) . '-' . substr($uuid, 20);
 }
 
-$stmt = $mysqli->prepare("SELECT uuid, name, skin_url, cape_url, is_slim FROM profiles WHERE uuid = ?");
+$stmt = $mysqli->prepare("SELECT uuid, name, skin_md5, cape_md5, is_slim FROM profiles WHERE uuid = ?");
 $stmt->bind_param("s", $uuid);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -33,8 +33,9 @@ $uuidHex = str_replace('-', '', $profile['uuid']);
 
 $textures = [];
 $baseUrl = get_base_url();
-if ($profile['skin_url']) {
-    $url = $profile['skin_url'];
+if ($profile['skin_md5']) {
+    $md5 = $profile['skin_md5'];
+    $url = "$baseUrl/uploads/skins/{$uuid}_skin.png?md5=$md5";
     if (strpos($url, '//') === 0) {
         $url = (strpos($baseUrl, 'https') === 0 ? 'https:' : 'http:') . $url;
     }
@@ -45,8 +46,9 @@ if ($profile['skin_url']) {
         $textures['SKIN']['metadata'] = ["model" => "slim"];
     }
 }
-if ($profile['cape_url']) {
-    $url = $profile['cape_url'];
+if ($profile['cape_md5']) {
+    $md5 = $profile['cape_md5'];
+    $url = "$baseUrl/uploads/capes/{$uuid}_{$md5}_cape.png";
     if (strpos($url, '//') === 0) {
         $url = (strpos($baseUrl, 'https') === 0 ? 'https:' : 'http:') . $url;
     }
