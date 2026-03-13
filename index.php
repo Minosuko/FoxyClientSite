@@ -135,7 +135,7 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
                     <i class="fab fa-discord" style="font-size: 3rem; color: #5865F2; margin-bottom: 20px;"></i>
                     <h4>Discord Community</h4>
                     <p style="margin-bottom: 25px; color: var(--text-muted);">Join our Discord for instant help, community updates, and to meet other users.</p>
-                    <a href="#" class="btn btn-secondary" style="width: 100%; justify-content: center;">Join Discord</a>
+                    <a href="https://discord.gg/HhRDbGQHXz" class="btn btn-secondary" style="width: 100%; justify-content: center;">Join Discord</a>
                 </div>
                 <div class="support-card" style="padding: 40px; border-radius: 20px; text-align: center;">
                     <i class="fas fa-book" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
@@ -155,7 +155,7 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
 
     <footer style="padding: 80px 10% 40px; text-align: center; border-top: 1px solid var(--glass-border);">
         <div class="logo-text" style="font-size: 1.2rem; margin-bottom: 20px;">FOXY CLIENT</div>
-        <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 600px; margin: 0 auto;">&copy; 2026 Foxy Client Team. Not an official Minecraft product. Not approved by or
+        <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 600px; margin: 0 auto;">&copy; 2026 Foxy Client Dev. Not an official Minecraft product. Not approved by or
             associated with Mojang or Microsoft.</p>
     </footer>
 
