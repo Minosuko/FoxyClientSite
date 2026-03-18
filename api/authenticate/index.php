@@ -63,6 +63,9 @@ if ($profResult->num_rows > 0) {
 $token_id = generate_token();
 $payload = [
     "sub" => str_replace('-', '', $selectedProfile['id']), // profileId as sub
+    "foxyclient" => true,
+    "username" => $user['username'],
+    "uuid" => $selectedProfile['id'],
     "iat" => time(),
     "exp" => time() + (7 * 24 * 60 * 60), // 7 days
     "jti" => $token_id
