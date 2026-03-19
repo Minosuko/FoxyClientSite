@@ -129,6 +129,7 @@ $error = $error ?? '';
 </head>
 <body>
     <div class="bg-overlay"></div>
+    <div class="bg-mesh"></div>
     <div class="auth-container">
         <div class="auth-card">
             <h2>Welcome Back</h2>

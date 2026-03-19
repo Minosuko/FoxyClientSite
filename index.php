@@ -53,24 +53,24 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
             <h2>Downloads</h2>
             <div class="underline"></div>
         </div>
-        <div class="downloads-container">
-            <div class="download-card">
+        <div class="card-grid">
+            <div class="feature-card">
                 <i class="fab fa-windows"></i>
-                <h3>Windows</h3>
+                <h3>Windows Native</h3>
                 <p>Full-featured installer for Windows 10 & 11. Optimized for native performance and stability.</p>
-                <a href="#" class="btn btn-primary" style="width: 100%; justify-content: center;">Download Installer</a>
+                <a href="https://github.com/Minosuko/FoxyClient/releases/latest/download/FoxyClient.exe" class="btn btn-primary" style="margin-top: 20px; width: 100%;">Download Installer</a>
             </div>
-            <div class="download-card">
+            <div class="feature-card" style="opacity: 0.7;">
                 <i class="fab fa-java"></i>
-                <h3>Universal</h3>
-                <p>Run Foxy Client on any system with Java installed. Portable, lightweight, and efficient.</p>
-                <a href="#" class="btn btn-secondary" style="width: 100%; justify-content: center; opacity: 0.6; cursor: not-allowed;">COMING SOON</a>
+                <h3>Universal Archive</h3>
+                <p>Run Foxy Client on macOS or Linux with Java 21+. Portable, lightweight, and fast.</p>
+                <button class="btn btn-secondary" style="margin-top: 20px; width: 100%; cursor: not-allowed;" disabled>COMING SOON</button>
             </div>
-            <div class="download-card">
-                <i class="fas fa-rocket"></i>
+            <div class="feature-card">
+                <i class="fas fa-satellite-dish"></i>
                 <h3>Beta Access</h3>
-                <p>Get the latest experimental features and help us shape the future of FoxyClient development.</p>
-                <a href="#" class="btn btn-secondary" style="width: 100%; justify-content: center;">Join Beta Program</a>
+                <p>Get the latest experimental optimization features before they hit the stable release channel.</p>
+                <a href="https://discord.gg/HhRDbGQHXz" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">Join Beta Program</a>
             </div>
         </div>
     </section>
@@ -126,29 +126,27 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
 
     <section id="support">
         <div class="section-title">
-            <h2>Support</h2>
+            <h2>Support & Community</h2>
             <div class="underline"></div>
         </div>
-        <div class="support-content">
-            <div class="downloads-container" style="width: 100%;">
-                <div class="support-card" style="padding: 40px; border-radius: 20px; text-align: center;">
-                    <i class="fab fa-discord" style="font-size: 3rem; color: #5865F2; margin-bottom: 20px;"></i>
-                    <h4>Discord Community</h4>
-                    <p style="margin-bottom: 25px; color: var(--text-muted);">Join our Discord for instant help, community updates, and to meet other users.</p>
-                    <a href="https://discord.gg/HhRDbGQHXz" class="btn btn-secondary" style="width: 100%; justify-content: center;">Join Discord</a>
-                </div>
-                <div class="support-card" style="padding: 40px; border-radius: 20px; text-align: center;">
-                    <i class="fas fa-book" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
-                    <h4>Documentation</h4>
-                    <p style="margin-bottom: 25px; color: var(--text-muted);">Read our detailed guides on how to get the most out of Foxy Client features.</p>
-                    <a href="#" class="btn btn-secondary" style="width: 100%; justify-content: center;">View Wiki</a>
-                </div>
-                <div class="support-card" style="padding: 40px; border-radius: 20px; text-align: center;">
-                    <i class="fas fa-envelope" style="font-size: 3rem; color: var(--secondary); margin-bottom: 20px;"></i>
-                    <h4>Official Support</h4>
-                    <p style="margin-bottom: 25px; color: var(--text-muted);">Send us an email for account or billing inquiries and professional assistance.</p>
-                    <a href="mailto:support@foxyclient.com" class="btn btn-secondary" style="width: 100%; justify-content: center;">Contact Us</a>
-                </div>
+        <div class="card-grid">
+            <div class="feature-card">
+                <i class="fab fa-discord" style="color: #5865F2;"></i>
+                <h3>Discord Server</h3>
+                <p>Join our massive community hub for instant help, mod discussions, and to meet other players.</p>
+                <a href="https://discord.gg/HhRDbGQHXz" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">Join Discord</a>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-code-branch" style="color: var(--primary);"></i>
+                <h3>Source Code</h3>
+                <p>Foxy Client's website and ecosystem is transparent. Check out our repositories on GitHub.</p>
+                <a href="https://github.com/Minosuko/FoxyClientSite" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">View GitHub</a>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-envelope-open-text" style="color: var(--secondary);"></i>
+                <h3>Official Support</h3>
+                <p>Need account help? Send us an email for secure billing and profile-related inquiries.</p>
+                <a href="mailto:support@foxyclient.com" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">Contact Us</a>
             </div>
         </div>
     </section>
@@ -160,11 +158,25 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
     </footer>
 
     <script>
+        // Navbar Scroll Effect
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+
         // FAQ Accordion
         document.querySelectorAll('.faq-question').forEach(button => {
             button.addEventListener('click', () => {
                 const faqItem = button.parentElement;
-                faqItem.classList.toggle('active');
+                const wasActive = faqItem.classList.contains('active');
+                
+                // Close others
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                if (!wasActive) faqItem.classList.add('active');
             });
         });
 
@@ -172,9 +184,15 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                const targetElem = document.querySelector(targetId);
+                if(targetElem) {
+                    window.scrollTo({
+                        top: targetElem.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
             });
         });
     </script>

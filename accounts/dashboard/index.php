@@ -320,29 +320,33 @@ if ($profile['last_rename_at']) {
     <style>
         .dashboard-container {
             max-width: 1200px;
-            margin: 120px auto 60px;
-            padding: 0 20px;
+            margin: 120px auto 80px;
+            padding: 0 5%;
             display: grid;
             grid-template-columns: 350px 1fr;
             gap: 40px;
         }
 
+        /* Sidebar Styling */
         .profile-sidebar {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
+            background: var(--bg-surface);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             padding: 40px;
             border-radius: 24px;
             height: fit-content;
             border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-highlight);
             text-align: center;
             position: sticky;
             top: 100px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
         }
 
         .skin-preview {
             width: 100%;
             aspect-ratio: 1/1.5;
-            background: rgba(0, 0, 0, 0.3);
+            background: radial-gradient(circle at bottom, rgba(0, 229, 255, 0.15) 0%, rgba(0,0,0,0.4) 60%);
             border-radius: 16px;
             margin-bottom: 30px;
             display: flex;
@@ -351,7 +355,16 @@ if ($profile['last_rename_at']) {
             overflow: hidden;
             position: relative;
             border: 1px solid var(--glass-border);
-            box-shadow: inset 0 0 30px rgba(0, 242, 255, 0.05);
+            box-shadow: inset 0 -20px 40px rgba(0, 229, 255, 0.05);
+        }
+
+        .skin-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0; width: 60%; height: 10px;
+            background: var(--primary);
+            filter: blur(15px);
+            opacity: 0.5;
         }
 
         #skin_container {
@@ -360,65 +373,96 @@ if ($profile['last_rename_at']) {
             image-rendering: pixelated;
         }
 
+        /* Main Content Styling */
         .main-content {
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 35px;
         }
 
-        .content-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            padding: 40px;
+        .dashboard-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            padding: 45px;
             border-radius: 24px;
             border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-highlight);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.3;
+        }
+
+        .dashboard-card h2, .dashboard-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        /* Stats Grid */
         .stat-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .stat-card {
             padding: 25px;
             border-radius: 16px;
             border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.01);
+            background: rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: rgba(0, 229, 255, 0.3);
+            background: rgba(0, 229, 255, 0.03);
+            transform: translateY(-5px);
         }
 
         .stat-card h4 {
             color: var(--text-muted);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
         }
 
         .stat-card p {
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: var(--primary);
             font-family: var(--font-heading);
+            filter: drop-shadow(0 0 8px rgba(0,229,255,0.4));
         }
 
-        .upload-section { margin-top: 40px; }
-        .form-group { margin-bottom: 25px; }
+        /* Premium Forms */
         .form-group label {
             display: block;
             margin-bottom: 12px;
             font-weight: 600;
             color: var(--text-main);
             font-size: 0.95rem;
+            letter-spacing: 0.5px;
         }
 
         input[type="file"] {
             width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--glass-border);
-            border-radius: 10px;
+            border-radius: 12px;
             color: var(--text-muted);
             cursor: pointer;
             transition: var(--transition);
@@ -426,48 +470,63 @@ if ($profile['last_rename_at']) {
 
         input[type="file"]:hover {
             border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(0, 229, 255, 0.05);
         }
 
-        .checkbox-container {
+        /* Rename Input Fields */
+        .rename-input-row {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            user-select: none;
-            cursor: pointer;
+            gap: 15px;
+            align-items: stretch;
+        }
+        .rename-input-row input {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.05rem;
+            transition: var(--transition);
+            font-family: var(--font-body);
+        }
+        .rename-input-row input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 229, 255, 0.05);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
         }
 
-        .checkbox-container input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: var(--primary);
-        }
-
-        /* Slim Toggle Switch */
+        /* Slim Toggle Switch (Ultra Premium) */
         .slim-toggle-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.02);
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            margin-bottom: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+        .slim-toggle-row:hover {
+            border-color: rgba(255,255,255,0.1);
         }
         .slim-toggle-row .toggle-label {
             font-weight: 600;
             color: var(--text-main);
+            font-size: 1.1rem;
         }
         .slim-toggle-row .toggle-sub {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin-top: 6px;
         }
+        
         .toggle-switch {
             position: relative;
-            width: 52px;
-            height: 28px;
+            width: 60px;
+            height: 32px;
             cursor: pointer;
         }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -475,208 +534,88 @@ if ($profile['last_rename_at']) {
             position: absolute;
             inset: 0;
             background: rgba(255,255,255,0.1);
-            border-radius: 14px;
-            transition: 0.3s;
+            border-radius: 16px;
+            transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .toggle-slider::before {
             content: '';
             position: absolute;
-            width: 22px; height: 22px;
+            width: 24px; height: 24px;
             left: 3px; bottom: 3px;
             background: #fff;
             border-radius: 50%;
-            transition: 0.3s;
+            transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
         .toggle-switch input:checked + .toggle-slider {
             background: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            border-color: var(--primary);
         }
         .toggle-switch input:checked + .toggle-slider::before {
-            transform: translateX(24px);
-        }
-        .toggle-switch.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Rename Section */
-        .rename-input-row {
-            display: flex;
-            gap: 12px;
-            align-items: stretch;
-        }
-        .rename-input-row input {
-            flex: 1;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            color: white;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        .rename-input-row input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 10px rgba(51, 230, 255, 0.2);
-        }
-
-        /* Rename History */
-        .history-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .history-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--glass-border);
-            font-size: 0.9rem;
-        }
-        .history-item:last-child { border-bottom: none; }
-        .history-names {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .history-names .old-name {
-            color: var(--text-muted);
-            text-decoration: line-through;
-        }
-        .history-names .arrow {
-            color: var(--primary);
-            font-size: 0.8rem;
-        }
-        .history-names .new-name {
-            color: var(--text-main);
-            font-weight: 600;
-        }
-        .history-date {
-            color: var(--text-muted);
-            font-size: 0.8rem;
+            transform: translateX(28px);
         }
 
         /* 2FA Section */
         .security-status {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            gap: 15px;
+            padding: 20px 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            font-weight: 600;
         }
         .security-status.enabled {
-            background: rgba(51, 255, 51, 0.08);
-            border: 1px solid rgba(51, 255, 51, 0.2);
-            color: #4dff4d;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            color: #00FF88;
         }
         .security-status.disabled {
-            background: rgba(255, 165, 0, 0.08);
-            border: 1px solid rgba(255, 165, 0, 0.2);
-            color: #ffa500;
-        }
-        .qr-container {
-            text-align: center;
-            padding: 30px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            margin: 20px 0;
-        }
-        .qr-container img {
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-        .secret-key {
-            font-family: monospace;
-            letter-spacing: 2px;
-            color: var(--primary);
-            font-size: 1rem;
-            background: rgba(0,0,0,0.3);
-            padding: 8px 16px;
-            border-radius: 8px;
-            display: inline-block;
-            margin: 10px 0;
+            background: rgba(255, 170, 0, 0.05);
+            border: 1px solid rgba(255, 170, 0, 0.2);
+            color: #FFAA00;
         }
         .totp-input {
-            width: 200px;
+            width: 250px;
             text-align: center;
-            font-size: 1.5rem;
-            letter-spacing: 8px;
+            font-size: 1.8rem;
+            letter-spacing: 12px;
             font-family: monospace;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            color: white;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--primary);
             transition: var(--transition);
         }
         .totp-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(51, 230, 255, 0.2);
+            box-shadow: 0 0 20px var(--primary-glow);
         }
 
-        /* Alerts inline */
-        .inline-alert {
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-top: 12px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: none;
-        }
-        .inline-alert.alert-danger {
-            background: rgba(255, 51, 51, 0.1);
-            color: #ff4d4d;
-            border: 1px solid rgba(255, 51, 51, 0.2);
-        }
-        .inline-alert.alert-success {
-            background: rgba(51, 255, 51, 0.1);
-            color: #4dff4d;
-            border: 1px solid rgba(51, 255, 51, 0.2);
-        }
-
-        .alert {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 600;
-            text-align: center;
-        }
-        .alert-danger {
-            background: rgba(255, 51, 51, 0.1);
-            color: #ff4d4d;
-            border: 1px solid rgba(255, 51, 51, 0.2);
-        }
-        .alert-success {
-            background: rgba(51, 255, 51, 0.1);
-            color: #4dff4d;
-            border: 1px solid rgba(51, 255, 51, 0.2);
-        }
-
-        .cooldown-notice {
-            color: var(--text-muted);
-            font-size: 0.85rem;
+        /* History */
+        .history-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 8px;
-            border: 1px solid var(--glass-border);
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.95rem;
+            transition: var(--transition);
         }
+        .history-item:hover {
+            background: rgba(255,255,255,0.02);
+        }
+        .history-names .old-name { color: var(--text-muted); text-decoration: line-through; }
+        .history-names .new-name { color: var(--text-main); font-weight: 600; }
+        .history-names .arrow { color: var(--primary); margin: 0 10px; }
 
         @media (max-width: 968px) {
-            .dashboard-container {
-                grid-template-columns: 1fr;
-            }
-            .profile-sidebar {
-                position: relative;
-                top: 0;
-            }
+            .dashboard-container { grid-template-columns: 1fr; }
+            .profile-sidebar { position: relative; top: 0; }
         }
     </style>
 </head>
@@ -712,7 +651,7 @@ if ($profile['last_rename_at']) {
 
         <main class="main-content">
             <!-- Account Overview -->
-            <div class="content-card">
+            <div class="dashboard-card">
                 <h2 style="margin-bottom: 10px;">Account Overview</h2>
                 <p style="color: var(--text-muted); margin-bottom: 35px;">Manage your Foxy Client character and profile settings.</p>
 
@@ -741,7 +680,7 @@ if ($profile['last_rename_at']) {
             </div>
 
             <!-- Customization -->
-            <div class="content-card">
+            <div class="dashboard-card">
                 <h3 style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
                     <i class="fas fa-tshirt" style="color: var(--primary);"></i> Customization
                 </h3>
@@ -814,7 +753,7 @@ if ($profile['last_rename_at']) {
             </div>
 
             <!-- Rename -->
-            <div class="content-card">
+            <div class="dashboard-card">
                 <h3 style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
                     <i class="fas fa-pen" style="color: var(--primary);"></i> Rename
                 </h3>
@@ -854,7 +793,7 @@ if ($profile['last_rename_at']) {
             </div>
 
             <!-- Security (2FA) -->
-            <div class="content-card">
+            <div class="dashboard-card">
                 <h3 style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
                     <i class="fas fa-shield-halved" style="color: var(--primary);"></i> Security
                 </h3>
@@ -1167,6 +1106,14 @@ if ($profile['last_rename_at']) {
             label.querySelector('.label-text').textContent = "File Selected";
         }
     }
+    </script>
+    <script>
+        // Navbar Scroll Effect
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
     </script>
 </body>
 </html>

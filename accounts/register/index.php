@@ -106,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="bg-overlay"></div>
+    <div class="bg-mesh"></div>
     <div class="auth-container">
         <div class="auth-card">
             <h2>Create Account</h2>
