@@ -140,13 +140,13 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
                 <i class="fas fa-code-branch" style="color: var(--primary);"></i>
                 <h3>Source Code</h3>
                 <p>Foxy Client's website and ecosystem is transparent. Check out our repositories on GitHub.</p>
-                <a href="https://github.com/Minosuko/FoxyClientSite" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">View GitHub</a>
+                <a href="https://github.com/Minosuko/FoxyClient" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">View GitHub</a>
             </div>
             <div class="feature-card">
                 <i class="fas fa-envelope-open-text" style="color: var(--secondary);"></i>
                 <h3>Official Support</h3>
                 <p>Need account help? Send us an email for secure billing and profile-related inquiries.</p>
-                <a href="mailto:support@foxyclient.com" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">Contact Us</a>
+                <a href="mailto:support@foxyclient.qzz.io" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">Contact Us</a>
             </div>
         </div>
     </section>
