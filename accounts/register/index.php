@@ -109,6 +109,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="bg-mesh"></div>
     <div class="auth-container">
         <div class="auth-card">
+            <div class="auth-tabs">
+                <a href="../login/<?php echo isset($_GET['return']) ? '?return=' . urlencode($_GET['return']) : ''; ?>" class="auth-tab">Login</a>
+                <a href="./<?php echo isset($_GET['return']) ? '?return=' . urlencode($_GET['return']) : ''; ?>" class="auth-tab active">Register</a>
+            </div>
             <h2>Create Account</h2>
             <p>Join the Foxy Client community</p>
 
@@ -144,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
 
             <div class="auth-footer">
-                Already have an account? <a href="../login/">Login here</a>
+                Already have an account? <a href="../login/<?php echo isset($_GET['return']) ? '?return=' . urlencode($_GET['return']) : ''; ?>">Login here</a>
             </div>
         </div>
     </div>

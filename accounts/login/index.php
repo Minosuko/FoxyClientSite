@@ -34,7 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $uid;
                 $_SESSION['username'] = $u['username'];
                 unset($_SESSION['pending_2fa_user_id']);
-                $resp = ['success' => true, 'redirect' => '../dashboard/'];
+                
+                $redirect = '../dashboard/';
+                if (isset($_GET['return'])) {
+                    $redirect = $_GET['return'];
+                }
+                $resp = ['success' => true, 'redirect' => $redirect];
             } else {
                 $resp = ['success' => false, 'error' => 'Invalid 2FA code.'];
             }
@@ -79,12 +84,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } else {
                         $_SESSION['user_id'] = $user['id'];
                         $_SESSION['username'] = $user['username'];
+
+                        $redirect = '../dashboard/';
+                        if (isset($_GET['return'])) {
+                            $redirect = $_GET['return'];
+                        }
+
                         if ($is_ajax) {
                             header('Content-Type: application/json');
-                            echo json_encode(['success' => true, 'redirect' => '../dashboard/']);
+                            echo json_encode(['success' => true, 'redirect' => $redirect]);
                             exit;
                         }
-                        header("Location: ../dashboard/");
+                        header("Location: " . $redirect);
                         exit;
                     }
                 } else {
@@ -132,6 +143,10 @@ $error = $error ?? '';
     <div class="bg-mesh"></div>
     <div class="auth-container">
         <div class="auth-card">
+            <div class="auth-tabs">
+                <a href="./<?php echo isset($_GET['return']) ? '?return=' . urlencode($_GET['return']) : ''; ?>" class="auth-tab active">Login</a>
+                <a href="../register/<?php echo isset($_GET['return']) ? '?return=' . urlencode($_GET['return']) : ''; ?>" class="auth-tab">Register</a>
+            </div>
             <h2>Welcome Back</h2>
             <p>Login to manage your profile</p>
 
@@ -173,7 +188,7 @@ $error = $error ?? '';
             </div>
 
             <div class="auth-footer">
-                Don't have an account? <a href="../register/">Register here</a><br>
+                Don't have an account? <a href="../register/<?php echo isset($_GET['return']) ? '?return=' . urlencode($_GET['return']) : ''; ?>">Register here</a><br>
                 <a href="../forgot-password/" style="font-size: 0.8rem; margin-top: 10px; display: inline-block;">Forgot Password?</a>
             </div>
         </div>

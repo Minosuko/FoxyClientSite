@@ -33,6 +33,37 @@
     background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
 }
 
+.auth-tabs {
+    display: flex;
+    margin: -50px -40px 30px -40px;
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.auth-tab {
+    flex: 1;
+    text-align: center;
+    padding: 18px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    border-bottom: 2px solid transparent;
+    letter-spacing: 1px;
+}
+
+.auth-tab:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.auth-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: rgba(0, 229, 255, 0.05);
+}
+
 .auth-card h2 {
     font-size: 2.2rem;
     margin-bottom: 15px;
