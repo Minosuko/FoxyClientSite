@@ -47,32 +47,31 @@ function issue_access_token($client_id, $user_id, $scope = '') {
     global $mysqli;
     require_once __DIR__ . '/yggdrasil.php';
 
-    $expires_in = 3600 * 24 * 30; // 30 days
-    $expires = date('Y-m-d H:i:s', time() + $expires_in);
+    $stmtUser = $mysqli->prepare("SELECT u.username, p.uuid FROM users u LEFT JOIN profiles p ON u.id = p.user_id WHERE u.id = ? LIMIT 1");
+    $stmtUser->bind_param("i", $user_id);
+    $stmtUser->execute();
+    $userData = $stmtUser->get_result()->fetch_assoc();
 
-    // Fetch user profile for JWT claims
-    $stmt = $mysqli->prepare("SELECT u.username, p.uuid, p.name as profile_name FROM users u LEFT JOIN profiles p ON u.id = p.user_id WHERE u.id = ?");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $user = $stmt->get_result()->fetch_assoc();
+    if (!$userData) return false;
 
-    $profile_uuid = $user && $user['uuid'] ? str_replace('-', '', $user['uuid']) : '';
+    $uuid = $userData['uuid'] ? str_replace('-', '', $userData['uuid']) : '';
+    $token_id = generate_token();
+    $iat = time();
+    $exp = $iat + (3600 * 24 * 30); // 30 days
 
-    // Generate JWT token
     $payload = [
-        'sub' => (string)$user_id,
-        'client_id' => $client_id,
-        'scope' => $scope,
-        'foxyclient' => true,
-        'username' => $user ? $user['username'] : '',
-        'uuid' => $profile_uuid,
-        'iat' => time(),
-        'exp' => time() + $expires_in,
-        'jti' => bin2hex(random_bytes(16))
+        "sub" => $uuid,
+        "foxyclient" => true,
+        "username" => $userData['username'],
+        "uuid" => $uuid,
+        "iat" => $iat,
+        "exp" => $exp,
+        "jti" => $token_id
     ];
-    $token = generate_jwt($payload);
 
-    // Store in DB for revocation support
+    $token = generate_jwt($payload);
+    $expires = date('Y-m-d H:i:s', $exp);
+
     $stmt = $mysqli->prepare("INSERT INTO oauth_access_tokens (access_token, client_id, user_id, expires, scope) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("ssiss", $token, $client_id, $user_id, $expires, $scope);
     
@@ -80,7 +79,7 @@ function issue_access_token($client_id, $user_id, $scope = '') {
         return [
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'expires_in' => $expires_in,
+            'expires_in' => 3600 * 24 * 30,
             'scope' => $scope
         ];
     }
