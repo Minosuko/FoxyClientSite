@@ -45,9 +45,34 @@ function verify_pkce($verifier, $challenge, $method) {
 
 function issue_access_token($client_id, $user_id, $scope = '') {
     global $mysqli;
-    $token = bin2hex(random_bytes(40));
-    $expires = date('Y-m-d H:i:s', time() + 3600 * 24 * 30); // 30 days
+    require_once __DIR__ . '/yggdrasil.php';
 
+    $expires_in = 3600 * 24 * 30; // 30 days
+    $expires = date('Y-m-d H:i:s', time() + $expires_in);
+
+    // Fetch user profile for JWT claims
+    $stmt = $mysqli->prepare("SELECT u.username, p.uuid, p.name as profile_name FROM users u LEFT JOIN profiles p ON u.id = p.user_id WHERE u.id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $user = $stmt->get_result()->fetch_assoc();
+
+    $profile_uuid = $user && $user['uuid'] ? str_replace('-', '', $user['uuid']) : '';
+
+    // Generate JWT token
+    $payload = [
+        'sub' => (string)$user_id,
+        'client_id' => $client_id,
+        'scope' => $scope,
+        'foxyclient' => true,
+        'username' => $user ? $user['username'] : '',
+        'uuid' => $profile_uuid,
+        'iat' => time(),
+        'exp' => time() + $expires_in,
+        'jti' => bin2hex(random_bytes(16))
+    ];
+    $token = generate_jwt($payload);
+
+    // Store in DB for revocation support
     $stmt = $mysqli->prepare("INSERT INTO oauth_access_tokens (access_token, client_id, user_id, expires, scope) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("ssiss", $token, $client_id, $user_id, $expires, $scope);
     
@@ -55,7 +80,7 @@ function issue_access_token($client_id, $user_id, $scope = '') {
         return [
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'expires_in' => 3600 * 24 * 30,
+            'expires_in' => $expires_in,
             'scope' => $scope
         ];
     }
