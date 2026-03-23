@@ -76,6 +76,11 @@ function issue_access_token($client_id, $user_id, $scope = '') {
     $stmt->bind_param("ssiss", $token, $client_id, $user_id, $expires, $scope);
     
     if ($stmt->execute()) {
+        $client_token = generate_uuid();
+        $stmt2 = $mysqli->prepare("INSERT INTO tokens (user_id, access_token, client_token, expires_at) VALUES (?, ?, ?, ?)");
+        $stmt2->bind_param("isss", $user_id, $token, $client_token, $expires);
+        $stmt2->execute();
+
         return [
             'access_token' => $token,
             'token_type' => 'Bearer',
