@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS oauth_clients (
 );
 
 CREATE TABLE IF NOT EXISTS oauth_access_tokens (
-    access_token VARCHAR(255) NOT NULL PRIMARY KEY,
+    access_token VARCHAR(400) NOT NULL PRIMARY KEY,
     client_id VARCHAR(80) NOT NULL,
     user_id INT NOT NULL,
     expires TIMESTAMP NOT NULL,
