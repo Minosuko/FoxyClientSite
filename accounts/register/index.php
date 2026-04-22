@@ -24,52 +24,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (strlen($password) < 6) {
         $error = "Password must be at least 6 characters.";
     } else {
-        // Check if username or email exists
-        $stmt = $mysqli->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
-        $stmt->bind_param("ss", $username, $email);
-        $stmt->execute();
-        if ($stmt->get_result()->num_rows > 0) {
-            $error = "Username or Email already exists.";
-        } else {
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
-            $verification_token = bin2hex(random_bytes(32));
-            
-            $stmt = $mysqli->prepare("INSERT INTO users (username, email, password_hash, verification_token) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssss", $username, $email, $password_hash, $verification_token);
-            
-            if ($stmt->execute()) {
-                $user_id = $mysqli->insert_id;
-                
-                // Create profile automatically
-                $uuid = generate_uuid();
-                $stmt = $mysqli->prepare("INSERT INTO profiles (user_id, uuid, name) VALUES (?, ?, ?)");
-                $stmt->bind_param("iss", $user_id, $uuid, $username);
-                $stmt->execute();
-                
-                // Send verification email via PHPMailer
-                $verify_link = "http://" . $_SERVER['HTTP_HOST'] . "/accounts/verify/?token=" . $verification_token;
-                $email_body = "
-                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background: #1a1a2e; color: #eee; border-radius: 12px;'>
-                        <h2 style='color: #00f2ff; margin-bottom: 20px;'>Welcome to Foxy Client!</h2>
-                        <p>Hi <strong>" . htmlspecialchars($username) . "</strong>,</p>
-                        <p>Thank you for registering. Please verify your email address by clicking the button below:</p>
-                        <div style='text-align: center; margin: 30px 0;'>
-                            <a href='" . $verify_link . "' style='display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #00f2ff, #0080ff); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold;'>Verify My Account</a>
-                        </div>
-                        <p style='color: #999; font-size: 0.85rem;'>If you did not register for this account, you can ignore this email.</p>
-                    </div>";
-                
-                $mail_sent = send_mail($email, "Verify your Foxy Client account", $email_body);
-                
-                if ($mail_sent) {
-                    $success = "Registration successful! Please check your email to verify your account.";
-                } else {
-                    $success = "Registration successful! Please check your email to verify your account. <br> (Development Link: <a href='$verify_link'>Verify Now</a>)";
-                }
-            } else {
-                $error = "Something went wrong. Please try again.";
-            }
-        }
+		if (!validateTurnstile($turnstile_secret_key)) {
+			$error = "Invalid captcha";
+		} else {
+			// Check if username or email exists
+			$stmt = $mysqli->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
+			$stmt->bind_param("ss", $username, $email);
+			$stmt->execute();
+			if ($stmt->get_result()->num_rows > 0) {
+				$error = "Username or Email already exists.";
+			} else {
+				$password_hash = password_hash($password, PASSWORD_DEFAULT);
+				$verification_token = bin2hex(random_bytes(32));
+				
+				$stmt = $mysqli->prepare("INSERT INTO users (username, email, password_hash, verification_token) VALUES (?, ?, ?, ?)");
+				$stmt->bind_param("ssss", $username, $email, $password_hash, $verification_token);
+				
+				if ($stmt->execute()) {
+					$user_id = $mysqli->insert_id;
+					
+					// Create profile automatically
+					$uuid = generate_uuid();
+					$stmt = $mysqli->prepare("INSERT INTO profiles (user_id, uuid, name) VALUES (?, ?, ?)");
+					$stmt->bind_param("iss", $user_id, $uuid, $username);
+					$stmt->execute();
+					
+					// Send verification email via PHPMailer
+					$verify_link = "http://" . $_SERVER['HTTP_HOST'] . "/accounts/verify/?token=" . $verification_token;
+					$email_body = "
+						<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background: #1a1a2e; color: #eee; border-radius: 12px;'>
+							<h2 style='color: #00f2ff; margin-bottom: 20px;'>Welcome to Foxy Client!</h2>
+							<p>Hi <strong>" . htmlspecialchars($username) . "</strong>,</p>
+							<p>Thank you for registering. Please verify your email address by clicking the button below:</p>
+							<div style='text-align: center; margin: 30px 0;'>
+								<a href='" . $verify_link . "' style='display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #00f2ff, #0080ff); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold;'>Verify My Account</a>
+							</div>
+							<p style='color: #999; font-size: 0.85rem;'>If you did not register for this account, you can ignore this email.</p>
+						</div>";
+					
+					$mail_sent = send_mail($email, "Verify your Foxy Client account", $email_body);
+					
+					if ($mail_sent) {
+						$success = "Registration successful! Please check your email to verify your account.";
+					} else {
+						$success = "Registration successful! Please check your email to verify your account. <br> (Development Link: <a href='$verify_link'>Verify Now</a>)";
+					}
+				} else {
+					$error = "Something went wrong. Please try again.";
+				}
+			}
+		}
     }
     
     if ($is_ajax) {
@@ -91,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Register | Foxy Client</title>
     <link rel="stylesheet" href="../auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
         .btn-auth:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -142,6 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label>Confirm Password</label>
                     <input type="password" name="confirm_password" required placeholder="Confirm your password">
                 </div>
+				<div class="cf-turnstile" data-sitekey="<?php echo $site_key;?>"></div>
                 <button type="submit" id="register-btn" class="btn btn-primary btn-auth">
                     REGISTER <span class="spinner" id="register-spinner"></span>
                 </button>

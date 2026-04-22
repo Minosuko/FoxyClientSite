@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../includes/db.php';
+require_once __DIR__ . '/../../includes/cf-turnstile.php';
 
 $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
@@ -9,40 +10,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle 2FA verification
     if (isset($_POST['verify_2fa'])) {
         $code = trim($_POST['totp_code'] ?? '');
-        
+
         if (!isset($_SESSION['pending_2fa_user_id'])) {
             $resp = ['success' => false, 'error' => 'No pending 2FA session.'];
         } elseif (empty($code)) {
             $resp = ['success' => false, 'error' => 'Please enter your 2FA code.'];
         } else {
-            require_once __DIR__ . '/../../includes/2FAGoogleAuthenticator.php';
-            $ga = new GoogleAuthenticator();
-            
-            $uid = $_SESSION['pending_2fa_user_id'];
-            $stmt = $mysqli->prepare("SELECT totp_secret FROM users WHERE id = ?");
-            $stmt->bind_param("i", $uid);
-            $stmt->execute();
-            $row = $stmt->get_result()->fetch_assoc();
-            
-            if ($row && $ga->verifyCode($row['totp_secret'], $code, 2)) {
-                // 2FA passed — set session
-                $stmt2 = $mysqli->prepare("SELECT username FROM users WHERE id = ?");
-                $stmt2->bind_param("i", $uid);
-                $stmt2->execute();
-                $u = $stmt2->get_result()->fetch_assoc();
-                
-                $_SESSION['user_id'] = $uid;
-                $_SESSION['username'] = $u['username'];
-                unset($_SESSION['pending_2fa_user_id']);
-                
-                $redirect = '../dashboard/';
-                if (isset($_GET['return'])) {
-                    $redirect = $_GET['return'];
-                }
-                $resp = ['success' => true, 'redirect' => $redirect];
-            } else {
-                $resp = ['success' => false, 'error' => 'Invalid 2FA code.'];
-            }
+			if (!validateTurnstile($turnstile_secret_key)) {
+				$resp = ['success' => false, 'error' => 'Invalid captcha'];
+			} else {
+				require_once __DIR__ . '/../../includes/2FAGoogleAuthenticator.php';
+				$ga = new GoogleAuthenticator();
+				
+				$uid = $_SESSION['pending_2fa_user_id'];
+				$stmt = $mysqli->prepare("SELECT totp_secret FROM users WHERE id = ?");
+				$stmt->bind_param("i", $uid);
+				$stmt->execute();
+				$row = $stmt->get_result()->fetch_assoc();
+				
+				if ($row && $ga->verifyCode($row['totp_secret'], $code, 2)) {
+					// 2FA passed — set session
+					$stmt2 = $mysqli->prepare("SELECT username FROM users WHERE id = ?");
+					$stmt2->bind_param("i", $uid);
+					$stmt2->execute();
+					$u = $stmt2->get_result()->fetch_assoc();
+					
+					$_SESSION['user_id'] = $uid;
+					$_SESSION['username'] = $u['username'];
+					unset($_SESSION['pending_2fa_user_id']);
+					
+					$redirect = '../dashboard/';
+					if (isset($_GET['return'])) {
+						$redirect = $_GET['return'];
+					}
+					$resp = ['success' => true, 'redirect' => $redirect];
+				} else {
+					$resp = ['success' => false, 'error' => 'Invalid 2FA code.'];
+				}
+			}
         }
         
         if ($is_ajax) {
@@ -62,49 +67,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($login) || empty($password)) {
             $error = "Please fill in all fields.";
         } else {
-            $stmt = $mysqli->prepare("SELECT id, username, password_hash, is_verified, totp_enabled FROM users WHERE username = ? OR email = ?");
-            if (!$stmt) die("Prepare failed: " . $mysqli->error);
-            $stmt->bind_param("ss", $login, $login);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            if ($result->num_rows === 1) {
-                $user = $result->fetch_assoc();
-                if (password_verify($password, $user['password_hash'])) {
-                    if ($user['is_verified'] == 0) {
-                        $error = "Your account is not verified. Please check your email.";
-                    } elseif ($user['totp_enabled'] == 1) {
-                        // 2FA required — don't set session yet
-                        $_SESSION['pending_2fa_user_id'] = $user['id'];
-                        if ($is_ajax) {
-                            header('Content-Type: application/json');
-                            echo json_encode(['success' => false, 'needs_2fa' => true]);
-                            exit;
-                        }
-                    } else {
-                        $_SESSION['user_id'] = $user['id'];
-                        $_SESSION['username'] = $user['username'];
+			if (!validateTurnstile($turnstile_secret_key)) {
+				$error = 'Invalid captcha';
+			} else {
+				$stmt = $mysqli->prepare("SELECT id, username, password_hash, is_verified, totp_enabled FROM users WHERE username = ? OR email = ?");
+				if (!$stmt) die("Prepare failed: " . $mysqli->error);
+				$stmt->bind_param("ss", $login, $login);
+				$stmt->execute();
+				$result = $stmt->get_result();
+				
+				if ($result->num_rows === 1) {
+					$user = $result->fetch_assoc();
+					if (password_verify($password, $user['password_hash'])) {
+						if ($user['is_verified'] == 0) {
+							$error = "Your account is not verified. Please check your email.";
+						} elseif ($user['totp_enabled'] == 1) {
+							// 2FA required — don't set session yet
+							$_SESSION['pending_2fa_user_id'] = $user['id'];
+							if ($is_ajax) {
+								header('Content-Type: application/json');
+								echo json_encode(['success' => false, 'needs_2fa' => true]);
+								exit;
+							}
+						} else {
+							$_SESSION['user_id'] = $user['id'];
+							$_SESSION['username'] = $user['username'];
 
-                        $redirect = '../dashboard/';
-                        if (isset($_GET['return'])) {
-                            $redirect = $_GET['return'];
-                        }
+							$redirect = '../dashboard/';
+							if (isset($_GET['return'])) {
+								$redirect = $_GET['return'];
+							}
 
-                        if ($is_ajax) {
-                            header('Content-Type: application/json');
-                            echo json_encode(['success' => true, 'redirect' => $redirect]);
-                            exit;
-                        }
-                        header("Location: " . $redirect);
-                        exit;
-                    }
-                } else {
-                    $error = "Invalid username or password.";
-                }
-            } else {
-                $error = "Invalid username or password.";
-            }
-        }
+							if ($is_ajax) {
+								header('Content-Type: application/json');
+								echo json_encode(['success' => true, 'redirect' => $redirect]);
+								exit;
+							}
+							header("Location: " . $redirect);
+							exit;
+						}
+					} else {
+						$error = "Invalid username or password.";
+					}
+				} else {
+					$error = "Invalid username or password.";
+				}
+			}
+		}
         
         if ($is_ajax) {
             header('Content-Type: application/json');
@@ -124,6 +133,7 @@ $error = $error ?? '';
     <title>Login | Foxy Client</title>
     <link rel="stylesheet" href="../auth.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
         .two-fa-section { display: none; margin-top: 20px; }
         .two-fa-section.active { display: block; }
@@ -165,6 +175,7 @@ $error = $error ?? '';
                     <label>Password</label>
                     <input type="password" name="password" id="password-input" required placeholder="Enter your password">
                 </div>
+				<div class="cf-turnstile" data-sitekey="<?php echo $turnstile_site_key;?>"></div>
                 <button type="submit" id="login-btn" class="btn btn-primary btn-auth">
                     LOGIN <span class="spinner" id="login-spinner"></span>
                 </button>
@@ -181,6 +192,7 @@ $error = $error ?? '';
                                maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code"
                                style="text-align: center; font-size: 1.5rem; letter-spacing: 8px; font-family: monospace;">
                     </div>
+					<div class="cf-turnstile" data-sitekey="<?php echo $turnstile_site_key;?>"></div>
                     <button type="submit" id="twofa-btn" class="btn btn-primary btn-auth">
                         VERIFY <span class="spinner" id="twofa-spinner"></span>
                     </button>
@@ -250,7 +262,7 @@ $error = $error ?? '';
             $.ajax({
                 url: '',
                 type: 'POST',
-                data: { verify_2fa: 1, totp_code: $('#totp-input').val() },
+                data: { verify_2fa: 1, totp_code: $('#totp-input').val(), cf-turnstile-response: $('[name="cf-turnstile-response"]').val() },
                 dataType: 'json',
                 success: function(res) {
                     if (res.success) {
