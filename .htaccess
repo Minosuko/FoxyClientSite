@@ -1,5 +1,8 @@
 RewriteEngine On
 
+# API Routing - Authserver
+RewriteRule ^api/authserver/authenticate([^/]+)$ /api/authenticate$1 [L,QSA]
+
 # API Routing - Profiles - byname
 RewriteRule ^api/profiles/minecraft/byname/([^/]+)$ /api/profiles/minecraft/byname/index.php?/$1 [L,QSA]
 
