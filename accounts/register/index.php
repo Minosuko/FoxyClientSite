@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/yggdrasil.php';
 require_once __DIR__ . '/../../includes/mail_helper.php';
+require_once __DIR__ . '/../../includes/cf-turnstile.php';
 
 $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
@@ -147,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label>Confirm Password</label>
                     <input type="password" name="confirm_password" required placeholder="Confirm your password">
                 </div>
-				<div class="cf-turnstile" data-sitekey="<?php echo $site_key;?>"></div>
+				<div class="cf-turnstile" data-sitekey="<?php echo $turnstile_site_key;?>"></div>
                 <button type="submit" id="register-btn" class="btn btn-primary btn-auth">
                     REGISTER <span class="spinner" id="register-spinner"></span>
                 </button>

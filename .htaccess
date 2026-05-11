@@ -1,0 +1,16 @@
+RewriteEngine On
+
+# API Routing - Authserver
+RewriteRule ^api/authserver/authenticate?$ /api/authenticate [L,QSA]
+
+# API Routing - Profiles - byname
+RewriteRule ^api/profiles/minecraft/byname/([^/]+)$ /api/profiles/minecraft/byname/index.php?/$1 [L,QSA]
+
+# API Routing - Profiles
+RewriteRule ^api/sessionserver/session/minecraft/profile/([^/]+)/?$ /api/sessionserver/session/minecraft/profile/index.php?uuid=$1 [L,QSA]
+
+# API Routing - hasJoined
+RewriteRule ^api/sessionserver/session/minecraft/hasJoined/?$ /api/sessionserver/session/minecraft/hasJoined/index.php [L,QSA]
+
+# API Routing - join
+RewriteRule ^api/sessionserver/session/minecraft/join/?$ /api/sessionserver/session/minecraft/join/index.php [L,QSA]
