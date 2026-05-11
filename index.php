@@ -56,21 +56,21 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
         <div class="card-grid">
             <div class="feature-card">
                 <i class="fab fa-windows"></i>
-                <h3>Windows Native</h3>
+                <h3>Windows</h3>
                 <p>Full-featured installer for Windows 10 & 11. Optimized for native performance and stability.</p>
-                <a href="https://github.com/Minosuko/FoxyClient/releases/latest/download/FoxyClient.exe" class="btn btn-primary" style="margin-top: 20px; width: 100%;">Download Installer</a>
+                <a href="https://github.com/Minosuko/FoxyClient/releases/latest/download/FoxyClient.exe" class="btn btn-primary" style="margin-top: 20px; width: 100%;">Download for Windows</a>
             </div>
             <div class="feature-card" style="opacity: 0.7;">
-                <i class="fab fa-java"></i>
-                <h3>Universal Archive</h3>
-                <p>Run Foxy Client on macOS or Linux with Java 21+. Portable, lightweight, and fast.</p>
+                <i class="fab fa-apple"></i>
+                <h3>MacOS</h3>
+                <p>Native macOS client optimized for Apple Silicon and Intel processors.</p>
                 <button class="btn btn-secondary" style="margin-top: 20px; width: 100%; cursor: not-allowed;" disabled>COMING SOON</button>
             </div>
             <div class="feature-card">
-                <i class="fas fa-satellite-dish"></i>
-                <h3>Beta Access</h3>
-                <p>Get the latest experimental optimization features before they hit the stable release channel.</p>
-                <a href="https://discord.gg/HhRDbGQHXz" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">Join Beta Program</a>
+                <i class="fab fa-linux"></i>
+                <h3>Linux</h3>
+                <p>Native Linux client built from the ground up for pure performance on Wayland and X11.</p>
+                <a href="https://github.com/Minosuko/FoxyClientLinux" class="btn btn-primary" style="margin-top: 20px; width: 100%;">Download for Linux</a>
             </div>
         </div>
     </section>
