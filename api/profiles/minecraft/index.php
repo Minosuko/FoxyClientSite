@@ -7,6 +7,30 @@ $path = $_SERVER['REQUEST_URI'];
 $parts = explode('/', rtrim($path, '/'));
 $uuid = end($parts);
 
+$isName = @json_decode(file_get_contents("php://input"));
+
+if(isset($isName[0])){
+    $username = $isName[0];
+    $stmt = $mysqli->prepare("SELECT uuid, name FROM profiles WHERE name = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        http_response_code(204);
+        exit;
+    }
+
+    $profile = $result->fetch_assoc();
+    $response = [[
+        "id" => str_replace('-', '', $profile['uuid']),
+        "name" => $profile['name']
+    ]];
+
+    send_json_response($response);
+    exit();
+}
+
 // Check if UUID is valid (32 chars hex or 36 chars with dashes)
 if (strlen($uuid) !== 32 && strlen($uuid) !== 36) {
      http_response_code(404);
