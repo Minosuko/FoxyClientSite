@@ -329,24 +329,22 @@ if ($profile['last_rename_at']) {
 
         /* Sidebar Styling */
         .profile-sidebar {
-            background: var(--bg-surface);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            background: var(--bg-glass);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             padding: 40px;
             border-radius: 24px;
             height: fit-content;
-            border: 1px solid var(--glass-border);
-            border-top: 1px solid var(--glass-highlight);
+            border: 1px solid var(--border-glass);
             text-align: center;
             position: sticky;
             top: 100px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
         }
 
         .skin-preview {
             width: 100%;
             aspect-ratio: 1/1.5;
-            background: radial-gradient(circle at bottom, rgba(0, 229, 255, 0.15) 0%, rgba(0,0,0,0.4) 60%);
+            background: var(--bg-glass);
             border-radius: 16px;
             margin-bottom: 30px;
             display: flex;
@@ -354,17 +352,7 @@ if ($profile['last_rename_at']) {
             justify-content: center;
             overflow: hidden;
             position: relative;
-            border: 1px solid var(--glass-border);
-            box-shadow: inset 0 -20px 40px rgba(0, 229, 255, 0.05);
-        }
-
-        .skin-preview::after {
-            content: '';
-            position: absolute;
-            bottom: 0; width: 60%; height: 10px;
-            background: var(--primary);
-            filter: blur(15px);
-            opacity: 0.5;
+            border: 1px solid var(--border-glass);
         }
 
         #skin_container {
@@ -381,14 +369,12 @@ if ($profile['last_rename_at']) {
         }
 
         .dashboard-card {
-            background: var(--bg-surface);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            background: var(--bg-glass);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             padding: 45px;
             border-radius: 24px;
-            border: 1px solid var(--glass-border);
-            border-top: 1px solid var(--glass-highlight);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glass);
             position: relative;
             overflow: hidden;
         }
@@ -397,8 +383,8 @@ if ($profile['last_rename_at']) {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            opacity: 0.3;
+            background: var(--primary);
+            opacity: 0.5;
         }
 
         .dashboard-card h2, .dashboard-card h3 {
@@ -418,17 +404,17 @@ if ($profile['last_rename_at']) {
         .stat-card {
             padding: 25px;
             border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-glass);
+            background: var(--bg-glass);
             position: relative;
             overflow: hidden;
             transition: var(--transition);
         }
 
         .stat-card:hover {
-            border-color: rgba(0, 229, 255, 0.3);
-            background: rgba(0, 229, 255, 0.03);
-            transform: translateY(-5px);
+            border-color: var(--primary);
+            background: var(--bg-glass-hover);
+            transform: translateY(-2px);
         }
 
         .stat-card h4 {
@@ -442,9 +428,8 @@ if ($profile['last_rename_at']) {
         .stat-card p {
             font-size: 1.4rem;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--text-main);
             font-family: var(--font-heading);
-            filter: drop-shadow(0 0 8px rgba(0,229,255,0.4));
         }
 
         /* Premium Forms */
@@ -457,20 +442,74 @@ if ($profile['last_rename_at']) {
             letter-spacing: 0.5px;
         }
 
-        input[type="file"] {
-            width: 100%;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition);
+        .file-upload-group {
+            margin-bottom: 35px !important;
         }
 
-        input[type="file"]:hover {
-            border-color: var(--primary);
-            background: rgba(0, 229, 255, 0.05);
+        .foxy-upload-box {
+            position: relative;
+            width: 100%;
+            border: 2px dashed rgba(255, 255, 255, 0.2) !important;
+            border-radius: 12px !important;
+            background: rgba(0, 0, 0, 0.2) !important;
+            text-align: center;
+            padding: 40px 20px !important;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .foxy-upload-box:hover {
+            border-color: var(--primary) !important;
+            background: rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .foxy-upload-box input[type="file"] {
+            position: absolute !important;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100% !important;
+            height: 100% !important;
+            opacity: 0 !important;
+            cursor: pointer !important;
+            z-index: 10;
+        }
+
+        .foxy-upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            pointer-events: none;
+            position: relative;
+            z-index: 5;
+        }
+
+        .foxy-upload-content i {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        .foxy-upload-content .primary-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .foxy-upload-content .secondary-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .file-info-display {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 8px;
+            color: #00FF88;
+            font-size: 0.95rem;
         }
 
         /* Rename Input Fields */
@@ -482,10 +521,10 @@ if ($profile['last_rename_at']) {
         .rename-input-row input {
             flex: 1;
             padding: 15px 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--glass-border);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
             border-radius: 12px;
-            color: white;
+            color: var(--text-main);
             font-size: 1.05rem;
             transition: var(--transition);
             font-family: var(--font-body);
@@ -493,8 +532,7 @@ if ($profile['last_rename_at']) {
         .rename-input-row input:focus {
             outline: none;
             border-color: var(--primary);
-            background: rgba(0, 229, 255, 0.05);
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+            background: var(--bg-glass-hover);
         }
 
         /* Slim Toggle Switch (Ultra Premium) */
@@ -503,14 +541,14 @@ if ($profile['last_rename_at']) {
             align-items: center;
             justify-content: space-between;
             padding: 25px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--glass-border);
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
             border-radius: 16px;
             margin-bottom: 30px;
             transition: var(--transition);
         }
         .slim-toggle-row:hover {
-            border-color: rgba(255,255,255,0.1);
+            border-color: var(--primary);
         }
         .slim-toggle-row .toggle-label {
             font-weight: 600;
@@ -550,7 +588,6 @@ if ($profile['last_rename_at']) {
         }
         .toggle-switch input:checked + .toggle-slider {
             background: var(--primary);
-            box-shadow: 0 0 15px var(--primary-glow);
             border-color: var(--primary);
         }
         .toggle-switch input:checked + .toggle-slider::before {
@@ -584,16 +621,16 @@ if ($profile['last_rename_at']) {
             letter-spacing: 12px;
             font-family: monospace;
             padding: 15px 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid var(--glass-border);
+            background: var(--bg-glass);
+            border: 2px solid var(--border-glass);
             border-radius: 12px;
-            color: var(--primary);
+            color: var(--text-main);
             transition: var(--transition);
         }
         .totp-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 20px var(--primary-glow);
+            background: var(--bg-glass-hover);
         }
 
         /* History */
@@ -602,7 +639,7 @@ if ($profile['last_rename_at']) {
             align-items: center;
             justify-content: space-between;
             padding: 16px 20px;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--border-glass);
             font-size: 0.95rem;
             transition: var(--transition);
         }
@@ -614,8 +651,13 @@ if ($profile['last_rename_at']) {
         .history-names .arrow { color: var(--primary); margin: 0 10px; }
 
         @media (max-width: 968px) {
-            .dashboard-container { grid-template-columns: 1fr; }
+            .dashboard-container { grid-template-columns: 1fr; margin-top: 100px; padding: 0 15px; }
             .profile-sidebar { position: relative; top: 0; }
+            .dashboard-card { padding: 25px; }
+            .slim-toggle-row { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .rename-input-row { flex-direction: column; }
+            .rename-input-row button { width: 100% !important; }
+            .totp-input { width: 100%; }
         }
     </style>
 </head>
@@ -702,12 +744,12 @@ if ($profile['last_rename_at']) {
                     <form action="" method="POST" enctype="multipart/form-data">
                         <div class="file-upload-group">
                             <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-main);">Skin Texture</label>
-                            <div class="file-input-wrapper">
+                            <div class="foxy-upload-box">
                                 <input type="file" name="skin" id="skin-input" accept="image/png" required onchange="updateFileInfo(this, 'skin-info')">
-                                <div class="file-input-label">
+                                <div class="foxy-upload-content">
                                     <i class="fas fa-cloud-upload-alt"></i>
-                                    <span class="label-text">Click or drag skin here</span>
-                                    <span class="sub-text">PNG (32x32 or 64x64), Max 20KB</span>
+                                    <span class="primary-text">Click or drag skin here</span>
+                                    <span class="secondary-text">PNG (32x32 or 64x64), Max 20KB</span>
                                 </div>
                             </div>
                             <div id="skin-info" class="file-info-display">
@@ -720,17 +762,17 @@ if ($profile['last_rename_at']) {
                         </button>
                     </form>
 
-                    <div style="height: 1px; background: var(--glass-border); margin: 40px 0;"></div>
+                    <div style="height: 1px; background: var(--border-glass); margin: 40px 0;"></div>
 
                     <form action="" method="POST" enctype="multipart/form-data">
                         <div class="file-upload-group">
                             <label style="display: block; margin-bottom: 12px; font-weight: 600; color: var(--text-main);">Cape Texture</label>
-                            <div class="file-input-wrapper">
+                            <div class="foxy-upload-box">
                                 <input type="file" name="cape" id="cape-input" accept="image/png" required onchange="updateFileInfo(this, 'cape-info')">
-                                <div class="file-input-label">
+                                <div class="foxy-upload-content">
                                     <i class="fas fa-shield-alt"></i>
-                                    <span class="label-text">Click or drag cape here</span>
-                                    <span class="sub-text">PNG, Max 5KB</span>
+                                    <span class="primary-text">Click or drag cape here</span>
+                                    <span class="secondary-text">PNG, Max 5KB</span>
                                 </div>
                             </div>
                             <div id="cape-info" class="file-info-display">
@@ -870,9 +912,7 @@ if ($profile['last_rename_at']) {
         skinViewer.loadCape("<?php echo "$baseUrl/uploads/capes/{$uuid}_{$profile['cape_md5']}_cape.png"; ?>");
         <?php endif; ?>
 
-        skinViewer.animations.add(skinview3d.WalkingAnimation);
-        skinViewer.animations.add(skinview3d.RotatingAnimation);
-        skinViewer.controls.enableZoom = false;
+        skinViewer.controls.enableZoom = true;
         skinViewer.fov = 70;
         
         function resizeCanvas() {
@@ -1101,9 +1141,9 @@ if ($profile['last_rename_at']) {
             
             // Dim the label if file selected
             const wrapper = input.parentElement;
-            const label = wrapper.querySelector('.file-input-label');
+            const label = wrapper.querySelector('.foxy-upload-content');
             label.style.opacity = '0.5';
-            label.querySelector('.label-text').textContent = "File Selected";
+            label.querySelector('.primary-text').textContent = "File Selected";
         }
     }
     </script>

@@ -81,10 +81,18 @@ function issue_access_token($client_id, $user_id, $scope = '') {
         $stmt2->bind_param("isss", $user_id, $token, $client_token, $expires);
         $stmt2->execute();
 
+        // Generate Refresh Token
+        $refresh_token = bin2hex(random_bytes(64));
+        $rt_expires = date('Y-m-d H:i:s', time() + (3600 * 24 * 60)); // 60 days
+        $stmt3 = $mysqli->prepare("INSERT INTO oauth_refresh_tokens (refresh_token, client_id, user_id, expires, scope) VALUES (?, ?, ?, ?, ?)");
+        $stmt3->bind_param("ssiss", $refresh_token, $client_id, $user_id, $rt_expires, $scope);
+        $stmt3->execute();
+
         return [
             'access_token' => $token,
             'token_type' => 'Bearer',
             'expires_in' => 3600 * 24 * 30,
+            'refresh_token' => $refresh_token,
             'scope' => $scope
         ];
     }

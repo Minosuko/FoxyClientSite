@@ -72,4 +72,36 @@ if ($grant_type === 'authorization_code') {
     send_json_response($token_data);
 }
 
+if ($grant_type === 'refresh_token') {
+    $refresh_token_input = $input['refresh_token'] ?? '';
+    
+    if (empty($refresh_token_input)) {
+        send_error('invalid_request', 'The refresh token is missing.', 'REFRESH_TOKEN_MISSING');
+    }
+    
+    $stmt = $mysqli->prepare("SELECT * FROM oauth_refresh_tokens WHERE refresh_token = ? AND client_id = ?");
+    $stmt->bind_param("ss", $refresh_token_input, $client_id);
+    $stmt->execute();
+    $rt_data = $stmt->get_result()->fetch_assoc();
+
+    if (!$rt_data || strtotime($rt_data['expires']) < time()) {
+        send_error('invalid_grant', 'The refresh token is invalid or expired.', 'REFRESH_TOKEN_INVALID');
+    }
+
+    // Confidential Client Check
+    if ($client['client_secret'] && $client['client_secret'] !== $client_secret) {
+        send_error('invalid_client', 'Client secret is required and must match.', 'SECRET_MISMATCH');
+    }
+
+    // Issue New Access Token
+    $token_data = issue_access_token($client_id, $rt_data['user_id'], $rt_data['scope']);
+    
+    // Delete the used refresh token (Rotation)
+    $stmt = $mysqli->prepare("DELETE FROM oauth_refresh_tokens WHERE refresh_token = ?");
+    $stmt->bind_param("s", $refresh_token_input);
+    $stmt->execute();
+
+    send_json_response($token_data);
+}
+
 send_error('unsupported_grant_type', 'The requested grant type is not supported.', 'GRANT_TYPE_UNSUPPORTED');

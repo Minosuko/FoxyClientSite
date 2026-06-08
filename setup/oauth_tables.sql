@@ -20,6 +20,16 @@ CREATE TABLE IF NOT EXISTS oauth_access_tokens (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS oauth_refresh_tokens (
+    refresh_token VARCHAR(400) NOT NULL PRIMARY KEY,
+    client_id VARCHAR(80) NOT NULL,
+    user_id INT NOT NULL,
+    expires TIMESTAMP NOT NULL,
+    scope VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS oauth_authorization_codes (
     authorization_code VARCHAR(80) NOT NULL PRIMARY KEY,
     client_id VARCHAR(80) NOT NULL,

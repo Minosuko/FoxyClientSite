@@ -29,6 +29,11 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
             <li><a href="#faq">FAQ</a></li>
             <li><a href="#support">Support</a></li>
             <li><a href="accounts/login/">Account</a></li>
+            <li>
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </li>
         </ul>
         <a href="#downloads" class="btn btn-primary" style="padding: 10px 25px; font-size: 0.85rem;">PLAY NOW</a>
     </nav>
@@ -131,19 +136,19 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
         </div>
         <div class="card-grid">
             <div class="feature-card">
-                <i class="fab fa-discord" style="color: #5865F2;"></i>
+                <i class="fab fa-discord"></i>
                 <h3>Discord Server</h3>
                 <p>Join our massive community hub for instant help, mod discussions, and to meet other players.</p>
                 <a href="https://discord.gg/HhRDbGQHXz" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">Join Discord</a>
             </div>
             <div class="feature-card">
-                <i class="fas fa-code-branch" style="color: var(--primary);"></i>
+                <i class="fas fa-code-branch"></i>
                 <h3>Source Code</h3>
                 <p>Foxy Client's website and ecosystem is transparent. Check out our repositories on GitHub.</p>
                 <a href="https://github.com/Minosuko/FoxyClient" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">View GitHub</a>
             </div>
             <div class="feature-card">
-                <i class="fas fa-envelope-open-text" style="color: var(--secondary);"></i>
+                <i class="fas fa-envelope-open-text"></i>
                 <h3>Official Support</h3>
                 <p>Need account help? Send us an email for secure billing and profile-related inquiries.</p>
                 <a href="mailto:support@foxyclient.qzz.io" class="btn btn-secondary" style="margin-top: 20px; width: 100%;">Contact Us</a>
@@ -158,6 +163,36 @@ header("X-Authlib-Injector-Api-Location: https://" . $_SERVER['HTTP_HOST'] . "/a
     </footer>
 
     <script>
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        // Check for saved theme preference or default to system preference
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            if (newTheme === 'dark') {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        });
+
         // Navbar Scroll Effect
         const nav = document.querySelector('nav');
         window.addEventListener('scroll', () => {

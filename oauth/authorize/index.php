@@ -58,9 +58,9 @@ if (isset($_POST['approve'])) {
     <link rel="stylesheet" href="../../accounts/auth.css">
     <style>
         .auth-card { text-align: center; }
-        .client-name { color: var(--primary); font-weight: bold; font-size: 1.2rem; }
-        .scope-list { text-align: left; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid var(--glass-border); }
-        .scope-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.9rem; }
+        .client-name { color: var(--text-main); font-weight: bold; font-size: 1.2rem; }
+        .scope-list { text-align: left; background: var(--bg-glass); padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid var(--border-glass); }
+        .scope-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted); }
         .scope-item i { color: var(--primary); }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

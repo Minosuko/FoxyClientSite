@@ -10,16 +10,14 @@
 }
 
 .auth-card {
-    background: var(--bg-surface);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--glass-border);
-    border-top: 1px solid var(--glass-highlight);
+    background: var(--bg-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border-glass);
     padding: 50px 40px;
     border-radius: 24px;
     width: 100%;
     max-width: 450px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 229, 255, 0.05);
     animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     position: relative;
     overflow: hidden;
@@ -30,14 +28,14 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+    background: var(--primary);
 }
 
 .auth-tabs {
     display: flex;
     margin: -50px -40px 30px -40px;
-    background: rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--border-glass);
 }
 
 .auth-tab {
@@ -54,24 +52,21 @@
 }
 
 .auth-tab:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-main);
+    background: var(--bg-glass-hover);
 }
 
 .auth-tab.active {
-    color: var(--primary);
+    color: var(--text-main);
     border-bottom-color: var(--primary);
-    background: rgba(0, 229, 255, 0.05);
+    background: var(--bg-glass);
 }
 
 .auth-card h2 {
     font-size: 2.2rem;
     margin-bottom: 15px;
     text-align: center;
-    background: linear-gradient(135deg, #fff, var(--text-muted));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-main);
 }
 
 .auth-card p {
@@ -98,10 +93,10 @@
 .form-group input {
     width: 100%;
     padding: 15px 20px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--glass-border);
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
     border-radius: 12px;
-    color: white;
+    color: var(--text-main);
     font-size: 1rem;
     transition: var(--transition);
     font-family: var(--font-body);
@@ -110,8 +105,7 @@
 .form-group input:focus {
     outline: none;
     border-color: var(--primary);
-    background: rgba(0, 229, 255, 0.05);
-    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+    background: var(--bg-glass-hover);
 }
 
 .btn-auth {
@@ -137,6 +131,34 @@
 }
 
 .auth-footer a:hover {
-    color: #fff;
-    text-shadow: 0 0 10px var(--primary-glow);
+    color: var(--text-main);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 500px) {
+    .auth-container {
+        padding: 10px;
+    }
+    
+    .auth-card {
+        padding: 40px 25px;
+    }
+
+    .auth-tabs {
+        margin: -40px -25px 25px -25px;
+    }
+
+    .auth-card h2 {
+        font-size: 1.8rem;
+    }
+    
+    .form-group input {
+        padding: 12px 15px;
+        font-size: 0.95rem;
+    }
+    
+    .btn-auth {
+        padding: 14px;
+        font-size: 1rem;
+    }
 }
