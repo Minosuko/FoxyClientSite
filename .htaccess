@@ -1,7 +1,11 @@
 RewriteEngine On
 
-# API Routing - Authserver
-RewriteRule ^api/authserver/authenticate?$ /api/authenticate [L,QSA]
+# Authserver
+RewriteRule ^api/authenticate/?$ api/authenticate/ [L,QSA]
+RewriteRule ^api/authserver/authenticate/?$ api/authenticate [L,QSA]
+
+# API Routing - profiles UUID lookup
+RewriteRule ^api/profiles/minecraft/([^/]+)/?$ api/profiles/minecraft/index.php?/$1 [L,QSA]
 
 # API Routing - Profiles - byname
 RewriteRule ^api/profiles/minecraft/byname/([^/]+)$ /api/profiles/minecraft/byname/index.php?/$1 [L,QSA]
