@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../../includes/db.php';
-require_once __DIR__ . '/../../includes/yggdrasil.php';
+require_once __DIR__ . '/../../../includes/db.php';
+require_once __DIR__ . '/../../../includes/yggdrasil.php';
 
 // Handle /api/profiles/minecraft/{uuid}
 $path = $_SERVER['REQUEST_URI'];
