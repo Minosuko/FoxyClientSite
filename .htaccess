@@ -9,6 +9,7 @@ RewriteRule ^api/profiles/minecraft/([^/]+)/?$ api/profiles/minecraft/index.php?
 
 # API Routing - Profiles - byname
 RewriteRule ^api/profiles/minecraft/byname/([^/]+)$ /api/profiles/minecraft/byname/index.php?/$1 [L,QSA]
+RewriteRule ^api/minecraft/profile/lookup/name/([^/]+)/?$ api/minecraft/profile/lookup/name/index.php?/$1 [L,QSA]
 
 # API Routing - Profiles
 RewriteRule ^api/sessionserver/session/minecraft/profile/([^/]+)/?$ /api/sessionserver/session/minecraft/profile/index.php?uuid=$1 [L,QSA]
