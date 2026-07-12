@@ -2,9 +2,16 @@
 session_start();
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/yggdrasil.php';
+require_once __DIR__ . '/../../includes/admin_functions.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login/");
+    exit;
+}
+
+if (is_banned($_SESSION['user_id'])) {
+    session_destroy();
+    header("Location: ../login/?banned=1");
     exit;
 }
 

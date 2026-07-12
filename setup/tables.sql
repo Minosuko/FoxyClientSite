@@ -56,3 +56,9 @@ CREATE TABLE IF NOT EXISTS rename_history (
 -- ALTER TABLE users ADD COLUMN totp_secret VARCHAR(32) NULL AFTER reset_expires;
 -- ALTER TABLE users ADD COLUMN totp_enabled TINYINT(1) DEFAULT 0 AFTER totp_secret;
 -- ALTER TABLE profiles ADD COLUMN last_rename_at TIMESTAMP NULL AFTER is_slim;
+-- ===== Admin & Ban System (v2) =====
+-- ALTER TABLE users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'user' AFTER totp_enabled;
+-- ALTER TABLE users ADD COLUMN banned TINYINT(1) NOT NULL DEFAULT 0 AFTER role;
+-- ALTER TABLE users ADD COLUMN ban_reason TEXT DEFAULT NULL AFTER banned;
+-- ALTER TABLE users ADD COLUMN banned_at TIMESTAMP NULL DEFAULT NULL AFTER ban_reason;
+-- ALTER TABLE users ADD COLUMN banned_by INT DEFAULT NULL AFTER banned_at;

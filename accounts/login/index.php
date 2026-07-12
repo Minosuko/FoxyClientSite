@@ -2,6 +2,7 @@
 session_start();
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/cf-turnstile.php';
+require_once __DIR__ . '/../../includes/admin_functions.php';
 
 $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
@@ -23,6 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				$ga = new GoogleAuthenticator();
 				
 				$uid = $_SESSION['pending_2fa_user_id'];
+				$banCheck = $mysqli->prepare("SELECT banned FROM users WHERE id = ?");
+				$banCheck->bind_param("i", $uid);
+				$banCheck->execute();
+				if ($banCheck->get_result()->fetch_assoc()['banned'] == 1) {
+					$resp = ['success' => false, 'error' => 'Your account has been banned.'];
+				} else {
 				$stmt = $mysqli->prepare("SELECT totp_secret FROM users WHERE id = ?");
 				$stmt->bind_param("i", $uid);
 				$stmt->execute();
@@ -49,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				}
 			}
         }
+        }
         
         if ($is_ajax) {
             header('Content-Type: application/json');
@@ -70,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			if (!validateTurnstile($turnstile_secret_key)) {
 				$error = 'Invalid captcha';
 			} else {
-				$stmt = $mysqli->prepare("SELECT id, username, password_hash, is_verified, totp_enabled FROM users WHERE username = ? OR email = ?");
+				$stmt = $mysqli->prepare("SELECT id, username, password_hash, is_verified, totp_enabled, banned, ban_reason FROM users WHERE username = ? OR email = ?");
 				if (!$stmt) die("Prepare failed: " . $mysqli->error);
 				$stmt->bind_param("ss", $login, $login);
 				$stmt->execute();
@@ -79,7 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				if ($result->num_rows === 1) {
 					$user = $result->fetch_assoc();
 					if (password_verify($password, $user['password_hash'])) {
-						if ($user['is_verified'] == 0) {
+						if ($user['banned'] == 1) {
+							$reason = $user['ban_reason'] ? " Reason: " . $user['ban_reason'] : "";
+							$error = "Your account has been banned." . $reason;
+						} elseif ($user['is_verified'] == 0) {
 							$error = "Your account is not verified. Please check your email.";
 						} elseif ($user['totp_enabled'] == 1) {
 							// 2FA required — don't set session yet
@@ -123,7 +134,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$error = $error ?? '';
+$banned_msg = isset($_GET['banned']) ? 'Your account has been banned. You cannot access your dashboard.' : '';
+$error = $error ?: ($banned_msg ?: '');
 ?>
 <!DOCTYPE html>
 <html lang="en">
